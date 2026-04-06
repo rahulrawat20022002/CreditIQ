@@ -1,0 +1,914 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>CreditIQ — System Architecture</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: #e8eaed;
+  color: #1a1a2e;
+}
+
+/* ── PAGE WRAPPER ─────────────────────────────── */
+.page {
+  width: 1100px;
+  margin: 30px auto;
+  background: #ffffff;
+  box-shadow: 0 4px 32px rgba(0,0,0,0.18);
+}
+
+/* ── HEADER ───────────────────────────────────── */
+.header {
+  background: #12172b;
+  padding: 22px 40px 20px;
+  text-align: center;
+}
+.header h1 {
+  font-size: 18px;
+  font-weight: 800;
+  color: #ffffff;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.header p {
+  font-size: 11.5px;
+  color: #8a93b0;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+}
+
+/* ── ROW LAYOUT ───────────────────────────────── */
+.row {
+  display: flex;
+  border-top: 1px solid #e0e3ea;
+}
+.row-label {
+  width: 120px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 10px;
+  text-align: center;
+}
+.row-label span {
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  line-height: 1.5;
+}
+.row-body {
+  flex: 1;
+  padding: 28px 32px;
+  border-left: 1px solid #e0e3ea;
+}
+
+/* label colours */
+.lbl-source { background: #2c3347; }
+.lbl-source span { color: #a0aac0; }
+.lbl-p1 { background: #3d1f6e; }
+.lbl-p1 span { color: #c8b0f0; }
+.lbl-p2 { background: #1a3a6e; }
+.lbl-p2 span { color: #a0c4f8; }
+.lbl-p3 { background: #1a4a3a; }
+.lbl-p3 span { color: #90d8b8; }
+.lbl-p4 { background: #6e2a1a; }
+.lbl-p4 span { color: #f0b090; }
+.lbl-p5 { background: #1a3a5e; }
+.lbl-p5 span { color: #90b8f0; }
+.lbl-p6 { background: #3a1a6e; }
+.lbl-p6 span { color: #c0a8f0; }
+.lbl-p7 { background: #1a5a38; }
+.lbl-p7 span { color: #88e0b0; }
+.lbl-p8 { background: #12172b; }
+.lbl-p8 span { color: #8090b8; }
+.lbl-p9 { background: #2a1a4a; }
+.lbl-p9 span { color: #b0a0d8; }
+
+/* ── CARDS ────────────────────────────────────── */
+.card {
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid #dde2ec;
+}
+.card-head {
+  padding: 10px 18px;
+  font-size: 12px;
+  font-weight: 700;
+  text-align: center;
+  letter-spacing: 0.02em;
+}
+.card-body {
+  background: #ffffff;
+  padding: 14px 18px;
+}
+.card-note {
+  font-size: 10.5px;
+  color: #5a6278;
+  text-align: center;
+  line-height: 1.5;
+  margin-top: 4px;
+}
+
+/* head colours */
+.ch-dark  { background: #2c3347; color: #e8ecf8; }
+.ch-pur   { background: #4a2890; color: #ffffff; }
+.ch-blue  { background: #1a4a9a; color: #ffffff; }
+.ch-teal  { background: #0a6a4a; color: #ffffff; }
+.ch-red   { background: #8a1a28; color: #ffffff; }
+.ch-slate { background: #2a3858; color: #ffffff; }
+.ch-green { background: #0e6e38; color: #ffffff; }
+.ch-amber { background: #7a4a00; color: #ffffff; }
+.ch-indigo{ background: #2a1a6a; color: #ffffff; }
+
+/* ── GRID HELPERS ─────────────────────────────── */
+.g2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.g3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.g4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 12px; }
+.g32 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+
+/* ── NUMBER HIGHLIGHTS ────────────────────────── */
+.big-num {
+  font-size: 36px;
+  font-weight: 800;
+  line-height: 1;
+  text-align: center;
+  margin: 8px 0 4px;
+}
+.med-num {
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 1;
+  text-align: center;
+  margin: 6px 0 3px;
+}
+.sm-num {
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1;
+}
+.n-red    { color: #d42020; }
+.n-amber  { color: #c07800; }
+.n-green  { color: #0a7a40; }
+.n-blue   { color: #1a50c0; }
+.n-purple { color: #6020b0; }
+.n-slate  { color: #3a5080; }
+
+/* ── BADGE / ALERT ────────────────────────────── */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  border-radius: 4px;
+  padding: 5px 12px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin: 6px auto;
+  display: flex;
+  width: fit-content;
+}
+.badge-red    { background: #fde8ea; border: 1px solid #e08090; color: #a01828; }
+.badge-amber  { background: #fef3e0; border: 1px solid #d8a040; color: #7a4800; }
+.badge-green  { background: #e8f7ee; border: 1px solid #70c890; color: #0a5a28; }
+.badge-blue   { background: #e8f0fd; border: 1px solid #80a8e8; color: #1038a0; }
+.badge-purple { background: #f0eafd; border: 1px solid #a878e0; color: #5010a0; }
+
+/* ── ARROW DOWN ───────────────────────────────── */
+.arrow-down {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 6px 0;
+  background: #f4f5f8;
+  border-top: 1px solid #e0e3ea;
+}
+.arrow-down::after {
+  content: '';
+  display: block;
+  width: 0; height: 0;
+  border-left: 10px solid transparent;
+  border-right: 10px solid transparent;
+  border-top: 12px solid #8a93b0;
+}
+
+/* ── INLINE ARROW ─────────────────────────────── */
+.inline-arrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 6px;
+  color: #8a93b0;
+  font-size: 18px;
+}
+
+/* ── TABLE ────────────────────────────────────── */
+table.neat {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 11px;
+}
+table.neat th {
+  background: #f0f2f8;
+  padding: 7px 10px;
+  font-weight: 600;
+  color: #3a4260;
+  text-align: left;
+  border-bottom: 2px solid #dde2ec;
+}
+table.neat td {
+  padding: 6px 10px;
+  border-bottom: 1px solid #eef0f8;
+  color: #2a3050;
+}
+table.neat tr:last-child td { border-bottom: none; }
+
+/* ── DIVIDER ──────────────────────────────────── */
+.kv { font-size: 10.5px; color: #5a6278; line-height: 1.8; }
+.kv strong { color: #1a1a2e; font-weight: 600; }
+
+/* ── STEP CONNECTOR ───────────────────────────── */
+.step-row {
+  display: flex;
+  align-items: center;
+  gap: 0;
+}
+.step-arrow {
+  width: 32px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.step-arrow::after {
+  content: '▶';
+  color: #8a93b0;
+  font-size: 13px;
+}
+
+/* ── COMPLIANCE ITEM ──────────────────────────── */
+.comp-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 5px 0;
+  border-bottom: 1px solid #eef0f8;
+  font-size: 10.5px;
+  color: #2a3050;
+  line-height: 1.4;
+}
+.comp-item:last-child { border-bottom: none; }
+.comp-icon { font-size: 11px; margin-top: 1px; flex-shrink: 0; }
+
+/* ── VS BLOCK ─────────────────────────────────── */
+.vs-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin: 8px 0;
+}
+.vs-pill {
+  font-size: 9px;
+  font-weight: 700;
+  color: #8a93b0;
+  letter-spacing: .1em;
+}
+
+/* ── FOOTER ───────────────────────────────────── */
+.footer {
+  background: #12172b;
+  padding: 14px 32px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.footer span {
+  font-size: 10px;
+  color: #6070a0;
+  font-family: 'Inter', monospace;
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+<!-- ══════════════════════════════════════════════
+     HEADER
+════════════════════════════════════════════════ -->
+<div class="header">
+  <h1>Fairness-by-Design in Credit Scoring — System Architecture</h1>
+  <p>German Credit Dataset &nbsp;·&nbsp; 5-Phase Bias Mitigation Pipeline &nbsp;·&nbsp; Ethics in Data Science &nbsp;·&nbsp; Disparate Impact Regulatory Standard (≥ 0.80)</p>
+</div>
+
+
+<!-- ══════════════════════════════════════════════
+     DATA SOURCE
+════════════════════════════════════════════════ -->
+<div class="row">
+  <div class="row-label lbl-source">
+    <span>Data<br>Source</span>
+  </div>
+  <div class="row-body">
+    <div class="card">
+      <div class="card-head ch-dark">German Credit Dataset</div>
+      <div class="card-body" style="text-align:center;">
+        <p style="font-size:12px;color:#3a4260;margin-bottom:6px;">1,000 Records &nbsp;·&nbsp; 20 Raw Features &nbsp;·&nbsp; Class Distribution: 70% Good Risk / 30% Bad Risk</p>
+        <p style="font-size:11px;color:#6070a0;">Target Variable: <strong>credit_risk</strong> (1 = Good, 0 = Bad) &nbsp;·&nbsp; Protected Attributes: <strong>age_group_num</strong> (0 = Younger [Unprivileged], 1 = Older [Privileged]) &nbsp;&amp;&nbsp; <strong>gender</strong> (0 = Female, 1 = Male)</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="arrow-down"></div>
+
+<!-- ══════════════════════════════════════════════
+     PHASE 1 — PRE-TRAINING RISK AUDIT
+════════════════════════════════════════════════ -->
+<div class="row">
+  <div class="row-label lbl-p1">
+    <span>Phase 1<br><br>Pre-Training<br>Risk Audit</span>
+  </div>
+  <div class="row-body">
+    <div class="g2">
+
+      <div class="card">
+        <div class="card-head ch-pur">Baseline Fairness Audit</div>
+        <div class="card-body" style="text-align:center;">
+          <p style="font-size:11px;color:#5a6278;">Disparate Impact (DI) on Raw Historical Data</p>
+          <div class="big-num n-red">DI = 0.7948</div>
+          <div class="badge badge-red" style="margin:8px auto;">⚠ VIOLATION — Below 0.80 Threshold</div>
+          <p class="card-note">Younger applicants 20.52% under-approved vs older group</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head ch-pur">Representation Risk</div>
+        <div class="card-body" style="text-align:center;">
+          <p style="font-size:11px;color:#5a6278;">Worker Group Class Imbalance</p>
+          <div class="vs-row" style="margin-top:10px;">
+            <div>
+              <div class="med-num n-amber">963</div>
+              <div style="font-size:10px;color:#8a93b0;">National Workers</div>
+            </div>
+            <div class="vs-pill">VS</div>
+            <div>
+              <div class="med-num n-amber">37</div>
+              <div style="font-size:10px;color:#8a93b0;">Foreign Workers</div>
+            </div>
+          </div>
+          <div class="badge badge-amber" style="margin:10px auto;">⚠ Extreme Imbalance — 26:1 Ratio</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div class="arrow-down"></div>
+
+<!-- ══════════════════════════════════════════════
+     PHASE 2 — PRE-PROCESSING
+════════════════════════════════════════════════ -->
+<div class="row">
+  <div class="row-label lbl-p2">
+    <span>Phase 2<br><br>Pre-<br>Processing</span>
+  </div>
+  <div class="row-body">
+    <div class="step-row">
+
+      <div class="card" style="flex:1;">
+        <div class="card-head ch-slate">Raw Features</div>
+        <div class="card-body" style="text-align:center;">
+          <div class="med-num n-slate">20</div>
+          <p style="font-size:11px;color:#5a6278;">Original Features<br>No transformation applied</p>
+          <p style="font-size:10px;color:#9a9ab0;margin-top:6px;font-style:italic;">→ Baseline / Biased Path</p>
+        </div>
+      </div>
+
+      <div class="step-arrow"></div>
+
+      <div class="card" style="flex:1.3;">
+        <div class="card-head ch-blue">Disparate Impact Remover (DIR)</div>
+        <div class="card-body" style="text-align:center;">
+          <div class="med-num n-blue">repair_level = 1.0</div>
+          <p style="font-size:11px;color:#5a6278;">Shifts feature percentiles to neutralize<br>the historical disadvantage of younger group</p>
+          <div class="badge badge-blue" style="margin:8px auto;">AIF360 · feature: age_group_num</div>
+        </div>
+      </div>
+
+      <div class="step-arrow"></div>
+
+      <div class="card" style="flex:1;">
+        <div class="card-head ch-blue">One-Hot Encoding</div>
+        <div class="card-body" style="text-align:center;">
+          <div class="med-num n-blue">20 → 58</div>
+          <p style="font-size:11px;color:#5a6278;">Categorical → Numerical<br>Repaired feature space for fair training</p>
+          <div class="badge badge-green" style="margin:8px auto;">✓ df_repaired_full</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div class="arrow-down"></div>
+
+<!-- ══════════════════════════════════════════════
+     PHASE 3 — "YES-MAN" DISCOVERY
+════════════════════════════════════════════════ -->
+<div class="row">
+  <div class="row-label lbl-p3">
+    <span>Phase 3<br><br>Non-Linear<br>Model<br>Evaluation</span>
+  </div>
+  <div class="row-body">
+    <div class="g2">
+
+      <div class="card">
+        <div class="card-head ch-teal">Random Forest — Initial Results</div>
+        <div class="card-body">
+          <div class="g2" style="margin-bottom:10px;">
+            <div style="text-align:center;">
+              <div class="med-num n-green">0.97</div>
+              <p style="font-size:10px;color:#5a6278;">DI on Raw Data</p>
+            </div>
+            <div style="text-align:center;">
+              <div class="med-num n-green">0.90</div>
+              <p style="font-size:10px;color:#5a6278;">DI on Repaired Data</p>
+            </div>
+          </div>
+          <div style="text-align:center;">
+            <div class="med-num n-slate">70.50%</div>
+            <p style="font-size:10px;color:#5a6278;">Accuracy — without balanced weights</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head ch-red">"Yes-Man" Bias Discovered</div>
+        <div class="card-body" style="text-align:center;">
+          <div class="big-num n-red">~88%</div>
+          <p style="font-size:11px;color:#5a6278;margin-bottom:8px;">False Positive Rate</p>
+          <p style="font-size:11px;color:#3a4260;">Due to 70/30 class imbalance, the model approved almost every applicant — artificially inflating accuracy and masking true discrimination.</p>
+          <div class="badge badge-red" style="margin:10px auto;">⚠ Class Imbalance — Bias Masked</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div class="arrow-down"></div>
+
+<!-- ══════════════════════════════════════════════
+     PHASE 4 — TRADE-OFF DISCOVERY
+════════════════════════════════════════════════ -->
+<div class="row">
+  <div class="row-label lbl-p4">
+    <span>Phase 4<br><br>Post-Training<br>Risk Analysis</span>
+  </div>
+  <div class="row-body">
+
+    <p style="font-size:11px;color:#5a6278;margin-bottom:14px;text-align:center;">Introducing <strong>class_weight = 'balanced'</strong> forces the model to evaluate risk rigorously — revealing a critical Fairness-Accuracy trade-off</p>
+
+    <div class="g2">
+
+      <div class="card">
+        <div class="card-head ch-red">Model A — Biased Data + Balanced RF</div>
+        <div class="card-body">
+          <div class="g2">
+            <div style="text-align:center;">
+              <div class="med-num n-amber">74.00%</div>
+              <p style="font-size:10px;color:#5a6278;">Accuracy</p>
+            </div>
+            <div style="text-align:center;">
+              <div class="med-num n-red">0.6269</div>
+              <p style="font-size:10px;color:#5a6278;">Disparate Impact</p>
+            </div>
+          </div>
+          <div style="text-align:center;margin-top:10px;">
+            <div class="sm-num n-red">38.89%</div>
+            <p style="font-size:10px;color:#5a6278;">Youth FNR — Applicant Harm</p>
+          </div>
+          <div class="badge badge-red" style="margin:8px auto;">✗ Fails 80% Rule</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head ch-red">Model B — Repaired Data + Balanced RF</div>
+        <div class="card-body">
+          <div class="g2">
+            <div style="text-align:center;">
+              <div class="med-num n-amber">72.00%</div>
+              <p style="font-size:10px;color:#5a6278;">Accuracy</p>
+            </div>
+            <div style="text-align:center;">
+              <div class="med-num n-red">0.5750</div>
+              <p style="font-size:10px;color:#5a6278;">Disparate Impact</p>
+            </div>
+          </div>
+          <div style="text-align:center;margin-top:10px;">
+            <div class="sm-num n-red">44.44%</div>
+            <p style="font-size:10px;color:#5a6278;">Youth FNR — DIR worsened RF bias</p>
+          </div>
+          <div class="badge badge-red" style="margin:8px auto;">✗ DIR Counter-productive Here</div>
+        </div>
+      </div>
+
+    </div>
+
+    <div style="background:#fff8f0;border:1px solid #e8b870;border-radius:6px;padding:12px 16px;margin-top:14px;">
+      <p style="font-size:11px;color:#6a3800;"><strong>Analytical Conclusion:</strong> DIR pre-processing destroyed the unique compensatory signals the balanced RF relied on to approve younger applicants. Architecture pivots to <strong>Post-Processing (Threshold Optimization)</strong>.</p>
+    </div>
+
+  </div>
+</div>
+
+<div class="arrow-down"></div>
+
+<!-- ══════════════════════════════════════════════
+     PHASE 5 — MODEL COMPARISON + POST-PROCESSING
+════════════════════════════════════════════════ -->
+<div class="row">
+  <div class="row-label lbl-p5">
+    <span>Phase 5<br><br>Model<br>Selection &amp;<br>Post-<br>Processing</span>
+  </div>
+  <div class="row-body">
+
+    <!-- Model comparison -->
+    <div class="card" style="margin-bottom:16px;">
+      <div class="card-head ch-blue">3-Model Comparison — Why Random Forest?</div>
+      <div class="card-body" style="padding:0;">
+        <table class="neat">
+          <thead>
+            <tr>
+              <th>Model</th>
+              <th>Accuracy</th>
+              <th>Disparate Impact</th>
+              <th>FNR Gap (Younger − Older)</th>
+              <th>Decision</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Random Forest</strong> (n=100, depth=5)</td>
+              <td style="color:#0a7a40;font-weight:700;">73.0%</td>
+              <td style="color:#c07800;font-weight:700;">0.569</td>
+              <td style="color:#0a7a40;font-weight:700;">+23.6% ← best</td>
+              <td><span style="background:#e8f7ee;color:#0a5a28;padding:2px 8px;border-radius:3px;font-size:10px;font-weight:700;">✓ SELECTED</span></td>
+            </tr>
+            <tr>
+              <td>Logistic Regression (balanced)</td>
+              <td>72.5%</td>
+              <td style="color:#d42020;">0.492</td>
+              <td>+28.3%</td>
+              <td><span style="background:#fde8ea;color:#a01828;padding:2px 8px;border-radius:3px;font-size:10px;font-weight:700;">✗ Worst DI</span></td>
+            </tr>
+            <tr>
+              <td>Decision Tree (depth=5)</td>
+              <td>66.5%</td>
+              <td>0.589</td>
+              <td>+26.7%</td>
+              <td><span style="background:#fef3e0;color:#7a4800;padding:2px 8px;border-radius:3px;font-size:10px;font-weight:700;">✗ Low Accuracy</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Age sweet spot -->
+    <div class="step-row">
+
+      <div class="card" style="flex:1;">
+        <div class="card-head ch-blue">Age-Only Threshold</div>
+        <div class="card-body" style="text-align:center;">
+          <div class="g2">
+            <div>
+              <div class="sm-num n-slate" style="text-align:center;">50%</div>
+              <p style="font-size:10px;color:#5a6278;">Older applicants</p>
+            </div>
+            <div>
+              <div class="sm-num n-blue" style="text-align:center;">45%</div>
+              <p style="font-size:10px;color:#5a6278;">Younger applicants</p>
+            </div>
+          </div>
+          <p style="font-size:10px;color:#5a6278;margin-top:8px;">Mathematical "sweet spot" — youth FNR reduced to 27.78%</p>
+        </div>
+      </div>
+
+      <div class="step-arrow"></div>
+
+      <div class="card" style="flex:1;">
+        <div class="card-head ch-red">Still Fails 80% Rule</div>
+        <div class="card-body" style="text-align:center;">
+          <div class="big-num n-amber">0.7321</div>
+          <p style="font-size:11px;color:#5a6278;">Age-only DI — threshold insufficient</p>
+          <div class="badge badge-amber" style="margin:8px auto;">⚠ Deeper bias discovered</div>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+</div>
+
+<div class="arrow-down"></div>
+
+<!-- ══════════════════════════════════════════════
+     PHASE 6 — SHAP XAI + INTERSECTIONAL TRAP
+════════════════════════════════════════════════ -->
+<div class="row">
+  <div class="row-label lbl-p6">
+    <span>Phase 6<br><br>XAI &amp;<br>Intersectional<br>Audit</span>
+  </div>
+  <div class="row-body">
+    <div class="g2" style="margin-bottom:16px;">
+
+      <div class="card">
+        <div class="card-head ch-indigo">SHAP TreeExplainer</div>
+        <div class="card-body">
+          <p style="font-size:11px;color:#3a4260;margin-bottom:10px;">SHAP (Shapley Additive Explanations) deployed to investigate black-box Random Forest behaviour across demographic groups.</p>
+          <div class="comp-item"><span class="comp-icon">📊</span>Global summary plot — feature importance ranking</div>
+          <div class="comp-item"><span class="comp-icon">🔍</span>Local explanations — per-applicant force plots</div>
+          <div class="comp-item"><span class="comp-icon">⚠️</span>Proxy variables identified: housing, loan duration, employment gaps</div>
+          <div class="comp-item"><span class="comp-icon">🧬</span>gender column shows direct bias within youth group</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head ch-red">The Intersectional Trap</div>
+        <div class="card-body" style="text-align:center;">
+          <p style="font-size:11px;color:#5a6278;margin-bottom:8px;">Age threshold disproportionately benefits young men</p>
+          <div class="g2">
+            <div>
+              <div class="med-num n-red">29.03%</div>
+              <p style="font-size:10px;color:#5a6278;">FNR — Female Applicants</p>
+            </div>
+            <div>
+              <div class="med-num n-green">15.79%</div>
+              <p style="font-size:10px;color:#5a6278;">FNR — Male Applicants</p>
+            </div>
+          </div>
+          <div class="badge badge-red" style="margin:10px auto;">⚠ 13.24pp Gender Gap Remains</div>
+          <p class="card-note">Note: Younger Men subgroup n=1 good applicant → FNR (100%) statistically unreliable · excluded from reporting</p>
+        </div>
+      </div>
+
+    </div>
+
+    <div style="background:#f0eafd;border:1px solid #b090e0;border-radius:6px;padding:12px 16px;">
+      <p style="font-size:11px;color:#3a1a6a;"><strong>Finding:</strong> Because DIR was only applied to age, the model used historical financial proxy variables to inadvertently punish women. A single-axis threshold cannot achieve true fairness. Architecture upgrades to <strong>Intersectional Post-Processing</strong>.</p>
+    </div>
+
+  </div>
+</div>
+
+<div class="arrow-down"></div>
+
+<!-- ══════════════════════════════════════════════
+     PHASE 7 — INTERSECTIONAL THRESHOLD MATRIX
+════════════════════════════════════════════════ -->
+<div class="row">
+  <div class="row-label lbl-p7">
+    <span>Phase 7<br><br>Intersectional<br>Post-<br>Processing</span>
+  </div>
+  <div class="row-body">
+
+    <p style="font-size:11px;color:#5a6278;text-align:center;margin-bottom:14px;">4-Way Intersectional Threshold Matrix evaluating applicants across <strong>Age × Gender</strong> simultaneously</p>
+
+    <div class="g4" style="margin-bottom:14px;">
+
+      <div class="card">
+        <div class="card-head" style="background:#2a3858;color:#fff;">Older · Male</div>
+        <div class="card-body" style="text-align:center;">
+          <div class="med-num n-slate">τ = 0.50</div>
+          <p style="font-size:10px;color:#5a6278;">Standard baseline</p>
+          <div style="margin-top:8px;font-size:11px;">
+            <span style="color:#8a93b0;">FNR before: </span><strong>16.50%</strong>
+          </div>
+          <div style="font-size:11px;">
+            <span style="color:#8a93b0;">FNR after: </span><strong style="color:#0a7a40;">14.67%</strong>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head ch-blue">Older · Female</div>
+        <div class="card-body" style="text-align:center;">
+          <div class="med-num n-blue">τ = 0.44</div>
+          <p style="font-size:10px;color:#5a6278;">Slight boost</p>
+          <div style="margin-top:8px;font-size:11px;">
+            <span style="color:#8a93b0;">FNR before: </span><strong>22.40%</strong>
+          </div>
+          <div style="font-size:11px;">
+            <span style="color:#8a93b0;">FNR after: </span><strong style="color:#0a7a40;">17.78%</strong>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head ch-indigo">Younger · Male</div>
+        <div class="card-body" style="text-align:center;">
+          <div class="med-num n-purple">τ = 0.42</div>
+          <p style="font-size:10px;color:#5a6278;">Moderate boost</p>
+          <div style="margin-top:8px;font-size:11px;color:#8a93b0;">
+            n = 1 · excluded from<br>FNR reporting
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head ch-green">Younger · Female</div>
+        <div class="card-body" style="text-align:center;">
+          <div class="med-num n-green">τ = 0.42</div>
+          <p style="font-size:10px;color:#5a6278;">Doubly disadvantaged</p>
+          <div style="margin-top:8px;font-size:11px;">
+            <span style="color:#8a93b0;">FNR before: </span><strong>29.03%</strong>
+          </div>
+          <div style="font-size:11px;">
+            <span style="color:#8a93b0;">FNR after: </span><strong style="color:#0a7a40;">17.65%</strong>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- DI journey -->
+    <div class="step-row">
+      <div style="flex:1;text-align:center;background:#fde8ea;border:1px solid #e08090;border-radius:6px;padding:10px;">
+        <div class="sm-num n-red" style="text-align:center;">0.7948</div>
+        <p style="font-size:9.5px;color:#a01828;">Baseline</p>
+      </div>
+      <div class="step-arrow"></div>
+      <div style="flex:1;text-align:center;background:#fef3e0;border:1px solid #d8a040;border-radius:6px;padding:10px;">
+        <div class="sm-num n-amber" style="text-align:center;">0.7321</div>
+        <p style="font-size:9.5px;color:#7a4800;">Age-only</p>
+      </div>
+      <div class="step-arrow"></div>
+      <div style="flex:1;text-align:center;background:#f0eafd;border:1px solid #a878e0;border-radius:6px;padding:10px;">
+        <div class="sm-num n-purple" style="text-align:center;">1.0336</div>
+        <p style="font-size:9.5px;color:#5010a0;">Over-correction ⚠</p>
+      </div>
+      <div class="step-arrow"></div>
+      <div style="flex:1;text-align:center;background:#e8f7ee;border:1px solid #70c890;border-radius:6px;padding:10px;">
+        <div class="sm-num n-green" style="text-align:center;">0.8805</div>
+        <p style="font-size:9.5px;color:#0a5a28;">Final ✓ Pass</p>
+      </div>
+      <div class="step-arrow"></div>
+      <div style="flex:1;text-align:center;background:#e8f0fd;border:1px solid #80a8e8;border-radius:6px;padding:10px;">
+        <div class="sm-num n-blue" style="text-align:center;">≥ 0.80</div>
+        <p style="font-size:9.5px;color:#1038a0;">EU Threshold</p>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="arrow-down"></div>
+
+<!-- ══════════════════════════════════════════════
+     PHASE 8 — AUDIT + DEPLOYMENT
+════════════════════════════════════════════════ -->
+<div class="row">
+  <div class="row-label lbl-p8">
+    <span>Phase 8<br><br>Full Audit &amp;<br>Deployment</span>
+  </div>
+  <div class="row-body">
+
+    <!-- Metrics -->
+    <div class="g3" style="margin-bottom:16px;">
+
+      <div class="card">
+        <div class="card-head ch-dark">Final Audit Metrics</div>
+        <div class="card-body" style="padding:0;">
+          <table class="neat">
+            <tr><td>Accuracy</td><td style="font-weight:700;color:#1a50c0;">75.00%</td></tr>
+            <tr><td>Good Risk Recall</td><td style="font-weight:700;color:#0a7a40;">83%</td></tr>
+            <tr><td>Bad Risk Precision</td><td style="font-weight:700;color:#3a5080;">60%</td></tr>
+            <tr><td>FPR — Bank Risk</td><td style="font-weight:700;color:#c07800;">43.55%</td></tr>
+            <tr><td>FNR — Applicant Harm</td><td style="font-weight:700;color:#0a7a40;">16.67%</td></tr>
+            <tr><td>Disparate Impact</td><td style="font-weight:700;color:#0a7a40;">0.8805 ✓</td></tr>
+          </table>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head ch-dark">Inference Pipeline</div>
+        <div class="card-body">
+          <div class="comp-item"><span style="font-size:10px;color:#3a5080;font-weight:700;min-width:20px;">①</span>Streamlit form → build_feature_vector()</div>
+          <div class="comp-item"><span style="font-size:10px;color:#3a5080;font-weight:700;min-width:20px;">②</span>One-hot encode → align to model_columns.pkl</div>
+          <div class="comp-item"><span style="font-size:10px;color:#3a5080;font-weight:700;min-width:20px;">③</span>RF predict_proba() → P(good_credit) score</div>
+          <div class="comp-item"><span style="font-size:10px;color:#3a5080;font-weight:700;min-width:20px;">④</span>fair_credit_decision() → threshold router</div>
+          <div class="comp-item"><span style="font-size:10px;color:#3a5080;font-weight:700;min-width:20px;">⑤</span>Groq LLaMA 3.1 → LLM explanation</div>
+          <div class="comp-item"><span style="font-size:10px;color:#3a5080;font-weight:700;min-width:20px;">⑥</span>Verdict panel → human officer final decision</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head ch-dark">Automated Testing</div>
+        <div class="card-body">
+          <div style="text-align:center;margin-bottom:10px;">
+            <div class="med-num n-green">100%</div>
+            <p style="font-size:10px;color:#5a6278;">Branch Coverage</p>
+          </div>
+          <div class="comp-item"><span class="comp-icon">🔬</span>MockModel isolates business logic from RF</div>
+          <div class="comp-item"><span class="comp-icon">✅</span>All 4 demographic branches tested</div>
+          <div class="comp-item"><span class="comp-icon">✅</span>All decision boundary cases covered</div>
+          <div class="comp-item"><span class="comp-icon">💾</span>fair_credit_rf_model.pkl + model_columns.pkl</div>
+        </div>
+      </div>
+
+    </div>
+
+    <div style="background:#f0f8ee;border:1px solid #80c890;border-radius:6px;padding:12px 16px;">
+      <p style="font-size:11px;color:#0a4a20;"><strong>Final Result:</strong> Intersectional post-processing successfully equalized Applicant Harm (FNR) across all statistically valid groups. System accuracy of 75.00% exceeded the biased baseline (74.00%), proving <strong>fairness was achieved without sacrificing predictive power</strong>.</p>
+    </div>
+
+  </div>
+</div>
+
+<div class="arrow-down"></div>
+
+<!-- ══════════════════════════════════════════════
+     PHASE 9 — REGULATORY + MODELCARD
+════════════════════════════════════════════════ -->
+<div class="row">
+  <div class="row-label lbl-p9">
+    <span>Phase 9<br><br>Regulatory<br>&amp;<br>Modelcard</span>
+  </div>
+  <div class="row-body">
+
+    <div class="g2">
+
+      <!-- Compliance -->
+      <div>
+        <div class="card" style="margin-bottom:12px;">
+          <div class="card-head ch-indigo">EU AI Act — Annex III High-Risk</div>
+          <div class="card-body">
+            <div class="comp-item"><span class="comp-icon" style="color:#0a7a40;">✓</span>Art. 9 — Risk management system</div>
+            <div class="comp-item"><span class="comp-icon" style="color:#0a7a40;">✓</span>Art. 10 — Data governance (AIF360 DIR)</div>
+            <div class="comp-item"><span class="comp-icon" style="color:#0a7a40;">✓</span>Art. 11 — Technical documentation</div>
+            <div class="comp-item"><span class="comp-icon" style="color:#0a7a40;">✓</span>Art. 13 — Transparency (LLM explanation)</div>
+            <div class="comp-item"><span class="comp-icon" style="color:#0a7a40;">✓</span>Art. 14 — Human oversight (officer review)</div>
+            <div class="comp-item"><span class="comp-icon" style="color:#0a7a40;">✓</span>Art. 15 — Robustness (100% test coverage)</div>
+            <div class="comp-item"><span class="comp-icon" style="color:#c07800;">⚠</span>GDPR Art. 35 — DPIA required pre-production</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-head ch-indigo">Key Limitations</div>
+          <div class="card-body">
+            <div class="comp-item"><span class="comp-icon">🔴</span>Dataset from 1990s West Germany — outdated demographics</div>
+            <div class="comp-item"><span class="comp-icon">🔴</span>Binary gender encoding — non-binary not represented</div>
+            <div class="comp-item"><span class="comp-icon">🟡</span>1,000 samples — wide statistical confidence intervals</div>
+            <div class="comp-item"><span class="comp-icon">🟡</span>German market only — not transferable without retraining</div>
+            <div class="comp-item"><span class="comp-icon">🟡</span>Re-audit DI after every retraining cycle required</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modelcard -->
+      <div class="card">
+        <div class="card-head ch-indigo">Pseudo-Modelcard — CreditIQ v1.0</div>
+        <div class="card-body" style="padding:0;">
+          <table class="neat">
+            <tr><td style="color:#8a93b0;">Model Type</td><td>RandomForestClassifier (sklearn)</td></tr>
+            <tr><td style="color:#8a93b0;">Training Data</td><td>German Credit Dataset — 1,000 records</td></tr>
+            <tr><td style="color:#8a93b0;">Train / Test Split</td><td>80% / 20% (random_state = 42)</td></tr>
+            <tr><td style="color:#8a93b0;">Protected Attributes</td><td>age_group_num × gender</td></tr>
+            <tr><td style="color:#8a93b0;">Pre-processing</td><td>AIF360 DIR (repair_level = 1.0)</td></tr>
+            <tr><td style="color:#8a93b0;">Post-processing</td><td>Intersectional 4-branch threshold matrix</td></tr>
+            <tr><td style="color:#8a93b0;">Disparate Impact</td><td style="color:#0a7a40;font-weight:700;">0.8805 ✓ Passes 80% rule</td></tr>
+            <tr><td style="color:#8a93b0;">FNR (final)</td><td>16.67% — reduced from 44.4% baseline</td></tr>
+            <tr><td style="color:#8a93b0;">FPR (accepted)</td><td>43.55% — fairness-accuracy trade-off</td></tr>
+            <tr><td style="color:#8a93b0;">XAI Method</td><td>SHAP TreeExplainer (global + local)</td></tr>
+            <tr><td style="color:#8a93b0;">Test Coverage</td><td>100% branch — MockModel suite</td></tr>
+            <tr><td style="color:#8a93b0;">EU AI Act Status</td><td style="color:#1038a0;font-weight:700;">High-Risk (Annex III) — core reqs met</td></tr>
+            <tr><td style="color:#8a93b0;">Intended Use</td><td>Decision-support for loan officers only</td></tr>
+            <tr><td style="color:#8a93b0;">Out-of-scope</td><td style="color:#a01828;">No standalone decisions · No non-EU deployment</td></tr>
+          </table>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+</div>
+
+<!-- FOOTER -->
+<div class="footer">
+  <span>CreditIQ v1.0 · German Credit Dataset (Hofmann, 1994) · SRH Heidelberg · Delivered 08.03.2026</span>
+  <span>EU AI Act Annex III High-Risk · AGG Compliant · DI = 0.8805 ✓ · Accuracy = 75.00%</span>
+</div>
+
+</div><!-- end .page -->
+</body>
+</html>
