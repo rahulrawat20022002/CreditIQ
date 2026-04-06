@@ -1,6 +1,6 @@
 # CreditIQ — Fairness-by-Design Credit Scoring (Privacy, Ethics & Law Project)
 
-**Course:** Privacy, Ethics & Law (PEL) — SRH Heidelberg  
+**Course:** Privacy, Ethics & Law
 **Dataset:** German Credit Data (UCI ML Repository, Prof. Hans Hofmann, 1994)  
 **Project Type:** Responsible AI / Fair Credit Scoring / EU AI Act Compliance  
 **Status:** Final  
@@ -258,16 +258,14 @@ streamlit run app.py
 # 📁 Repository Structure
 
 ```
-.
-├── Ai_and_Ethics_Week3_FINAL.ipynb
+├── models
+        ├── Ai_and_Ethics.ipynb
+        ├── credit_data_scaler.pkl
+        ├── fair_credit_rf_model.pkl
+        ├── model_columns.pkl
 ├── app.py
-├── fair_credit_rf_model.pkl
-├── model_columns.pkl
-├── credit_data_scaler.pkl
-├── Week3_AI_Ethics_Fairness_fixed.pptx
-├── CreditIQ_SalesPitch.pptx
-├── CreditIQ_SpeakerNotes.docx
-└── README.md
+├── README.md
+├── requirements.txt
 ```
 
 ---
