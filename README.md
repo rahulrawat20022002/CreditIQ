@@ -79,7 +79,7 @@ Finance Manager (Human in Loop)
 # Phase 1 — Baseline Risk Audit
 Historical bias detected against younger applicants.
 
-**Disparate Impact (raw):** 0.7948 ❌
+**Disparate Impact (raw):** 0.7948 (Not passed)
 
 Risk Identified:
 
@@ -97,7 +97,7 @@ Results (Logistic Regression):
 | Model | Accuracy | DI |
 |------|---------|----|
 | Biased | 71% | 0.80 |
-| Repaired | 72% | 0.84 ✅ |
+| Repaired | 72% | 0.84 |
 
 DIR successful for linear models.
 
@@ -144,7 +144,7 @@ Younger → 0.45
 
 Result:
 
-DI = 0.7321 ❌ still failing
+DI = 0.7321 still failing
 
 ---
 
@@ -171,7 +171,7 @@ Gender bias detected.
 
 ---
 
-# ✅ Final Model Performance
+# Final Model Performance
 
 | Metric | Value |
 |-------|------|
@@ -181,7 +181,7 @@ Gender bias detected.
 | Bad Precision | 60% |
 | FPR | 43.55% |
 | FNR | 16.67% |
-| Disparate Impact | 0.8805 ✅ |
+| Disparate Impact | 0.8805 (Passed)|
 
 ---
 
@@ -224,11 +224,11 @@ HIGH‑RISK AI SYSTEM (Annex III)
 
 | Article | Requirement | Status |
 |--------|-------------|-------|
-| Art. 9 | Risk Management | ✅ |
-| Art.10 | Data Governance | ✅ |
-| Art.11 | Documentation | ✅ |
-| Art.13 | Transparency | ✅ |
-| Art.14 | Human Oversight | ✅ |
+| Art. 9 | Risk Management | Passed |
+| Art.10 | Data Governance | Passed |
+| Art.11 | Documentation | Passed |
+| Art.13 | Transparency | Passed |
+| Art.14 | Human Oversight | Passed |
 
 DPIA required before production.
 
@@ -329,7 +329,7 @@ Not allowed:
 
 # 👨‍💻 Author
 
-PEL Course Project — SRH Heidelberg  
+Course Project — SRH Heidelberg  
 Responsible AI / Fair Credit Scoring  
 
 ---
